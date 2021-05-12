@@ -1,10 +1,16 @@
 package processkings.state;
 
-import java.util.Set;
+import javafx.geometry.Pos;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
+
+import java.util.ArrayList;
 
 /**
  * Reprezents the state of table
  */
+@Data
 public class TableState implements Cloneable{
 
     /**
@@ -17,9 +23,40 @@ public class TableState implements Cloneable{
      */
     public static final int BOARD_SIZE_COLS = 8;
 
-    private Position position;
-    private Position enemy_position;
-    private static Set<Position> Default_positions;
+    /**
+     * The row of the empty space.
+     */
+    @Setter(AccessLevel.NONE)
+    private int emptyRow;
+
+    /**
+     * The column of the empty space.
+     */
+    @Setter(AccessLevel.NONE)
+    private int emptyCol;
+
+    /**
+     * Initializing the board table.
+     */
+    public static final int[][] INITIAL_TABLE = {
+            {0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0}
+    };
+
+    private Position ownPosition;
+    private Position enemyPosition;
+
+    private static int[][] BoardTable = INITIAL_TABLE;
+    private ArrayList<Position> DefaultPositions = new ArrayList<Position>();
+
+    private Position savedClickPosition = null;
+    private Position defaultClickPosition = null;
+
+    private boolean wasMoving = false;
 
     /**
      * Creates a {@code PuzzleState} object that corresponds to the original initial state of the puzzle.
@@ -34,100 +71,95 @@ public class TableState implements Cloneable{
      */
     public TableState(Position your, Position enemy){
         checkPositions(your);
-        this.position = (Position) clone(your);
-        this.enemy_position = (Position) clone(enemy);
+        checkPositions(enemy);
+        this.ownPosition = your.clone();
+        this.enemyPosition = enemy.clone();
         setDefault_positions();
+        setValuesInBoardTable();
     }
 
-    private void addPlusDefautPosition(Position position){ Default_positions.add(position); }
+    public boolean canMove(int i, int j){
+        Position position = new Position(i,j);
+        return isEmpty(position) && isOnBoard(position) && haveEightNeighbor(position) && isDistanceOneFromPosition(position);
+    }
+
+    public void move(Position Player, Position Target, Position Default){
+        Direction direction = Direction.of(Target.row() - Player.row(),Target.col() - Player.col());
+
+        this.BoardTable[Target.row()][Target.col()] = BoardTable[Player.row()][Player.col()];
+        BoardTable[Player.row()][Player.col()] = 0;
+
+
+        // Change position
+        ownPosition.setTarget(direction);
+        System.out.println("\nset");
+
+        // Move value
+        this.BoardTable[ownPosition.row()][ownPosition.col()] = getValueFromBoardTable(savedClickPosition.row(),savedClickPosition.col());
+        this.BoardTable[savedClickPosition.row()][savedClickPosition.col()] = 0;
+
+        // Set true because it was moving
+        this.wasMoving = true;
+
+        // Add to the Default Table a new default position
+        if(defaultClickPosition != null){
+            addNewDefaultPosition(defaultClickPosition);
+            System.out.println("\naddDEF");
+        }
+
+    }
+
+    private Direction getDirectionToMove(int row, int col){
+        if (! canMove(row, col)) {
+            throw new IllegalArgumentException();
+        }
+        return Direction.of(emptyRow - row, emptyCol - col);
+    }
+
+    public boolean isSolved(){
+        boolean bool = true;
+        for (int i = 0; i<BOARD_SIZE_ROWS; i++) {
+            for(int j = 0; j<BOARD_SIZE_COLS; j++) {
+                if(BoardTable[i][j] == 0 && isDistanceOneFromPosition(new Position(i,j))) {
+                    bool = false;
+                }
+            }
+        }
+        return bool;
+    }
+
+    public int getValueFromBoardTable(int i, int j){
+        return this.BoardTable[i][j];
+    }
 
     private void checkPositions(Position position) {
-        if (! isOnBoard(position)) { throw new IllegalArgumentException(); }
-        if (position.equals(enemy_position)) { throw new IllegalArgumentException(); }
-    }
+        if (!isOnBoard(position) && !isOnBoard(enemyPosition))
+            throw new IllegalArgumentException();
 
-    /**
-     * {@return a copy of the position of the piece specified}
-     *
-     * @param n the number of a piece
-     */
-    public Position getPosition(int n) {
-        return position.clone();
-    }
-
-    private boolean canMoveUp(){
-        return isEmpty(position.getUp()) && haveEightNeighbor(position.getUp().row(),position.getUp().col());
-    }
-
-    private boolean canMoveRight() {
-        return isEmpty(position.getRight()) && haveEightNeighbor(position.getRight().row(),position.getRight().col());
-    }
-
-    private boolean canMoveDown() {
-        return isEmpty(position.getDown()) && haveEightNeighbor(position.getDown().row(),position.getDown().col());
-    }
-
-    private boolean canMoveLeft() {
-        return isEmpty(position.getLeft()) && haveEightNeighbor(position.getLeft().row(),position.getLeft().col());
-    }
-
-    private boolean canMoveUpLeft() {
-        return isEmpty(position.getUpLeft()) && haveEightNeighbor(position.getUpLeft().row(),position.getUpLeft().col());
-    }
-
-    private boolean canMoveUpRight() {
-        return isEmpty(position.getUpRight()) && haveEightNeighbor(position.getUpRight().row(),position.getUpRight().col());
-    }
-
-    private boolean canMoveDownLeft() {
-        return isEmpty(position.getDownLeft()) && haveEightNeighbor(position.getDownLeft().row(),position.getDownLeft().col());
-    }
-
-    private boolean canMoveDownRight() {
-        return isEmpty(position.getDownRight()) && haveEightNeighbor(position.getDownRight().row(),position.getDownRight().col());
-    }
-
-
-    public void move(Direction direction) {
-        switch (direction) {
-            case UP -> moveUp();
-            case RIGHT -> moveRight();
-            case DOWN -> moveDown();
-            case LEFT -> moveLeft();
-            case UPLEFT -> moveUpLeft();
-            case UPRIGHT -> moveUpRight();
-            case DOWNLEFT -> moveDownLeft();
-            case DOWNRIGHT -> moveDownRight();
+        if (position.equals(enemyPosition)) {
+            throw new IllegalArgumentException();
         }
     }
 
-    private void moveUp() {  }
-
-    private void  moveRight() { }
-
-    private void moveDown() { }
-
-    private void moveLeft() { }
-
-    private void moveUpLeft() { }
-
-    private void moveUpRight() { }
-
-    private void moveDownLeft() { }
-
-    private void moveDownRight() { }
-
-
-    private boolean isOnBoard(Position position) {
-        return position.row() >= 0 && position.row() < BOARD_SIZE_ROWS &&
-                position.col() >= 0 && position.col() < BOARD_SIZE_COLS;
+    public void setBoardTableValue(int i, int j, int v){
+        BoardTable[i][j] = v;
     }
 
-    private boolean isEmpty(Position position) {
-        if (position.equals(this.enemy_position)) {
-            return false;
+    public int getBoardTableValue(int i, int j){
+        return BoardTable[i][j];
+    }
+
+    private void setValuesInBoardTable(){
+        for(int row = 0; row < BOARD_SIZE_ROWS; row++) {
+            for (int col = 0; col < BOARD_SIZE_COLS; col++) {
+                if (isInDefaultTable(row,col))
+                    this.BoardTable[row][col] = 1;
+                if (ownPosition.row() == row && ownPosition.col() == col)
+                    this.BoardTable[row][col] = 2;
+                else if (enemyPosition.row() == row && enemyPosition.col() == col)
+                    this.BoardTable[row][col] = 3;
+            }
         }
-        return true;
     }
 
     /**
@@ -137,21 +169,80 @@ public class TableState implements Cloneable{
     private void setDefault_positions(){
         for(int row = 0; row < BOARD_SIZE_ROWS; row++) {
             for (int col = 0; col < BOARD_SIZE_COLS; col++) {
+                Position position = new Position(row,col);
                 if (row == 0 || row == BOARD_SIZE_ROWS - 1 || col == 0 || col == BOARD_SIZE_COLS - 1)
-                    this.Default_positions.add(new Position(row,col));
+                    this.DefaultPositions.add(position);
             }
         }
     }
 
-    private boolean haveEightNeighbor(int row, int col){
-        Position Position = new Position(row,col);
-            return Default_positions.stream()
-                    .noneMatch((Position position) -> Position.equals(position));
+    public boolean getWasMoving(){
+        return this.wasMoving;
     }
 
-    private Object clone(Position position) {
-        Position copy = position;
-        return copy;
+    private boolean isInDefaultTable(int row, int col){
+        return DefaultPositions.stream()
+                .anyMatch((element) -> element.row() == row && element.col() == col);
+    }
+
+    private void addNewDefaultPosition(Position position){
+        DefaultPositions.add(position);
+    }
+
+    private boolean isOnBoard(Position position) {
+        return position.row() >= 0 && position.row() < BOARD_SIZE_ROWS &&
+                position.col() >= 0 && position.col() < BOARD_SIZE_COLS;
+    }
+
+    private boolean haveEightNeighbor(Position position){
+        int countPosition = 0;
+        for (int i = 0; i<BOARD_SIZE_ROWS; i++)
+            for(int j = 0; j<BOARD_SIZE_COLS; j++)
+                if(isDistanceOneFromPosition(new Position(i,j)))
+                    countPosition += 1;
+        return countPosition == 8;
+    }
+
+    private boolean isDistanceOneFromPosition(Position position){
+        return Math.abs(position.row() - ownPosition.row()) == 1
+                || Math.abs(position.col() - ownPosition.col()) == 1;
+    }
+
+    private boolean isEmpty(Position position) {
+        return BoardTable[position.row()][position.col()] == 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (! (o instanceof TableState)) {
+            return false;
+        }
+        return o.getClass().equals(TableState.class);
+    }
+
+
+    public static void main(String[] args) {
+        Position your = new Position(2, 0);
+        Position enemy = new Position(3, 7);
+        TableState tableState = new TableState(your , enemy);
+
+        for (int i = 0; i < BOARD_SIZE_ROWS; i++) {
+            for (int j = 0; j < BOARD_SIZE_COLS; j++)
+                System.out.print(tableState.getValueFromBoardTable(i, j) + " ");
+            System.out.println();
+        }
+
+        System.out.println(tableState.isInDefaultTable(0,4));
+
+
+            for (int j = 0; j < 15; j++)
+                System.out.print("(" +tableState.DefaultPositions.get(j).row() + "," + tableState.DefaultPositions.get(j).col() + ") ");
+            System.out.println();
+
+
     }
 
 }

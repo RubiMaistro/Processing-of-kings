@@ -7,10 +7,10 @@ public enum Direction {
     DOWN(1, 0),
     LEFT(0, -1),
 
-    UPLEFT(-1,-1),
-    UPRIGHT(-1, 1),
-    DOWNLEFT(1,-1),
-    DOWNRIGHT(1,1);
+    UP_LEFT(-1,-1),
+    UP_RIGHT(-1, 1),
+    DOWN_LEFT(1,-1),
+    DOWN_RIGHT(1,1);
 
     private int rowChange;
     private int colChange;

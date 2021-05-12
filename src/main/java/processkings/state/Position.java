@@ -45,36 +45,6 @@ public class Position implements Cloneable {
         return new Position(row + direction.getRowChange(), col + direction.getColChange());
     }
 
-    public Position getUp() {
-        return getTarget(Direction.UP);
-    }
-
-    public Position getRight() {
-        return getTarget(Direction.RIGHT);
-    }
-
-    public Position getDown() {
-        return getTarget(Direction.DOWN);
-    }
-
-    public Position getLeft() {
-        return getTarget(Direction.LEFT);
-    }
-
-    public Position getUpLeft() { return getTarget(Direction.UPLEFT); }
-
-    public Position getUpRight() {
-        return getTarget(Direction.UPRIGHT);
-    }
-
-    public Position getDownLeft() {
-        return getTarget(Direction.DOWNLEFT);
-    }
-
-    public Position getDownRight() {
-        return getTarget(Direction.DOWNRIGHT);
-    }
-
     /**
      * Changes the position by the coordinate changes of the direction given.
      *
@@ -85,44 +55,12 @@ public class Position implements Cloneable {
         col += direction.getColChange();
     }
 
-    public void setUp() {
-        setTarget(Direction.UP);
-    }
-
-    public void setRight() {
-        setTarget(Direction.RIGHT);
-    }
-
-    public void setDown() {
-        setTarget(Direction.DOWN);
-    }
-
-    public void setLeft() {
-        setTarget(Direction.LEFT);
-    }
-
-    public void setUpLeft() {
-        setTarget(Direction.UPLEFT);
-    }
-
-    public void setUpRight() {
-        setTarget(Direction.UPRIGHT);
-    }
-
-    public void setDownLeft() {
-        setTarget(Direction.DOWNLEFT);
-    }
-
-    public void setDownRight() {
-        setTarget(Direction.DOWNRIGHT);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
         }
-        return (o instanceof Position p) && p.row == row && p.col == col;
+        return false;
     }
 
     @Override

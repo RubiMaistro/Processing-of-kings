@@ -12,5 +12,4 @@ public class Player {
     public Player(Position position){
         this.position = position;
     }
-
 }
