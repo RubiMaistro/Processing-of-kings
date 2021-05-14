@@ -1,20 +1,20 @@
 package controller;
 
-import javafx.beans.property.ObjectProperty;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
+import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import processkings.state.Player;
 import processkings.state.Position;
 import processkings.state.TableState;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +50,6 @@ public class GameController{
     private Button doneButton;
 
 
-
     private void drawGameState() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 8; j++) {
@@ -76,6 +75,9 @@ public class GameController{
 
         gameState = new TableState(P1.getPosition(),P2.getPosition());
 
+        gameState.setDefaultPositions();
+        gameState.setInitialTable();
+
         stepCount = 0;
 
         beginGame = Instant.now();
@@ -92,42 +94,39 @@ public class GameController{
         P2.setPosition(gameState.getEnemyPosition());
     }
 
-    // onMouseClicked="#fieldClick" onMousePressed="#fieldPress" onMouseReleased="#fieldRelease"
+    private boolean isClickDefault = false;
+    private boolean isSaveClick = false;
+    private boolean isMoved = false;
 
-    public void fieldClick(MouseEvent mouseEvent) {
+    @FXML
+    private void fieldClick(MouseEvent mouseEvent) {
 
         int clickedColumn = GridPane.getColumnIndex((Node)mouseEvent.getSource());
         int clickedRow = GridPane.getRowIndex((Node)mouseEvent.getSource());
 
-        if(gameState.getBoardTableValue(clickedRow,clickedColumn) == 0)
-            gameState.setBoardTableValue(clickedRow,clickedColumn,1);
+        if(!gameState.isSolved()) {
+            if (gameState.isEqualOwnPosition(clickedRow, clickedColumn)
+                    && isSaveClick == false
+                    && isClickDefault == false) {
+                gameState.setSavedClickPosition(new Position(clickedRow, clickedColumn));
+                isSaveClick = true;
+                System.out.println("Save");
+
+            } else if (gameState.canMove(clickedRow, clickedColumn) == true && isSaveClick == true && isMoved == false) {
+                gameState.move(clickedRow, clickedColumn);
+                isMoved = true;
+                System.out.println("Move");
+
+            } else if (isMoved == true && isClickDefault == false && !gameState.isPlayer(clickedRow,clickedColumn)){
+                gameState.addNewDefaultPosition(new Position(clickedRow,clickedColumn));
+                isSaveClick = false;
+                isMoved = false;
+                gameState.changeNextPlayer();
+                System.out.println("Default");
+            }
+        }
 
         drawGameState();
-
     }
 
-    public void fieldPress(MouseEvent mouseEvent) {
-        int clickedColumn = GridPane.getColumnIndex((Node)mouseEvent.getSource());
-        int clickedRow = GridPane.getRowIndex((Node)mouseEvent.getSource());
-
-
-        drawGameState();
-    }
-
-    public void fieldRelease(MouseEvent mouseEvent) {
-        int clickedColumn = GridPane.getColumnIndex((Node)mouseEvent.getSource());
-        int clickedRow = GridPane.getRowIndex((Node)mouseEvent.getSource());
-
-
-        drawGameState();
-        nextPlayer();
-    }
-
-    private void nextPlayer(){
-        Player P0;
-
-        P0 = new Player(new Position(P1.getPosition().row(), P1.getPosition().col()));
-        P1 = P2;
-        P2 = P0;
-    }
 }

@@ -12,8 +12,8 @@ public enum Direction {
     DOWN_LEFT(1,-1),
     DOWN_RIGHT(1,1);
 
-    private int rowChange;
-    private int colChange;
+    private final int rowChange;
+    private final int colChange;
 
     private Direction(int row, int col) {
         this.rowChange = row;

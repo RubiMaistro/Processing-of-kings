@@ -28,7 +28,7 @@ public class LaunchController {
         if (usernameTextfield_o.getText().isEmpty() && usernameTextfield_e.getText().isEmpty()) {
             errorLabel.setText("* Username is empty!");
         } else {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game_img_test.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game.fxml"));
             Parent root = fxmlLoader.load();
             fxmlLoader.<GameController>getController().initdata(usernameTextfield_o.getText(), usernameTextfield_e.getText());
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();

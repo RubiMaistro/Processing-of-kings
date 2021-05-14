@@ -11,8 +11,8 @@ public class MyApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/launch.fxml"));
-        primaryStage.setTitle("Process Kings");
-        primaryStage.setResizable(false);
+        primaryStage.setTitle("GameMode");
+        primaryStage.setResizable(true);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
