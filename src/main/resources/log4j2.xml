@@ -1,0 +1,46 @@
+<Configuration status="debug">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{HH:mm:ss} %-5level %logger{36} - %msg%n</Property>
+        <Property name="LOG_SORT">%d{HH:mm:ss} - %msg%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{${LOG_PATTERN}}{DEBUG = bright magenta}"/>
+        </Console>
+        <File name="PlayerNames" fileName="Players.log" append="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <MarkerFilter marker="PLAYER_NAME" onMatch="ACCEPT" onMismatch="DENY"/>
+        </File>
+        <File name="Steps" fileName="Steps.log" append="false">
+            <PatternLayout pattern="${LOG_SORT}"/>
+            <MarkerFilter marker="STEPS" onMatch="ACCEPT" onMismatch="DENY"/>
+        </File>
+        <File name="Defaults" fileName="Default.log" append="true">
+            <PatternLayout pattern="%msg%n"/>
+            <MarkerFilter marker="DEFAULTS" onMatch="ACCEPT" onMismatch="DENY"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="all">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="PlayerNames"/>
+            <AppenderRef ref="Steps"/>
+            <AppenderRef ref="Defaults"/>
+        </Root>
+        <Logger name="main.Main" additivity="true">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.hibernate.SQL" level="all" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.hibernate.type.descriptor.sql" level="all" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.hibernate.tool.hbm2ddl" level="all" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.hibernate.validator" level="all" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+    </Loggers>
+</Configuration>
