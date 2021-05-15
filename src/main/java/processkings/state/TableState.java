@@ -57,7 +57,7 @@ public class TableState implements Cloneable{
     private Position defaultClickPosition;
 
     /**
-     * Creates a {@code PuzzleState} object that corresponds to the original initial state of the puzzle.
+     * Creates a {@code TableState} object that indicate the missing parameters.
      */
     public TableState(){
         System.out.println("Missing parameters.");
@@ -65,8 +65,7 @@ public class TableState implements Cloneable{
     }
 
     /**
-     * Creates a {@code PuzzleState} object initializing the positions of the pieces with the positions specified.
-     * The constructor expects an array of four {@code Position} objects or four {@code Position} objects.
+     * Creates a {@code TableState} object initializing the positions of the pieces with the positions specified.
      */
     public TableState(Position your, Position enemy){
         checkPositions(your);
@@ -85,10 +84,13 @@ public class TableState implements Cloneable{
         setValuesInBoardTable();
         setInitialTable();
         initialMoveList();
-        Position savedClickPosition = null;
-        Position defaultClickPosition = null;
     }
 
+    /**
+     *
+     * @param row
+     * @param col
+     */
     public void move(int row, int col){
         Direction direction = Direction.of( row - savedClickPosition.row(),col -savedClickPosition.col());
 
