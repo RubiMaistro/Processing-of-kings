@@ -9,19 +9,19 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GameController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GameController">
     <children>
-        <Label fx:id="usernameLabelOwn" layoutX="80.0" layoutY="32.0" text="Lion King: " textFill="#ffcc00">
+        <Label fx:id="usernameLabelOwn" layoutX="80.0" layoutY="48.0" text="Lion King: " textFill="#ffcc00">
             <font>
-                <Font name="System Bold Italic" size="36.0" />
+                <Font name="System Bold Italic" size="24.0" />
             </font>
         </Label>
-        <Label fx:id="usernameLabelEnemy" layoutX="80.0" layoutY="85.0" text="Hyena: " textFill="#a11ca4">
+        <Label fx:id="usernameLabelEnemy" layoutX="80.0" layoutY="83.0" text="Hyena: " textFill="#a11ca4">
             <font>
-                <Font name="System Bold Italic" size="36.0" />
+                <Font name="System Bold Italic" size="24.0" />
             </font>
         </Label>
-        <GridPane fx:id="gameGrid" gridLinesVisible="true" layoutX="80.0" layoutY="165.0" prefHeight="480.0" prefWidth="640.0">
+        <GridPane fx:id="gameGrid" gridLinesVisible="true" layoutX="80.0" layoutY="172.0" prefHeight="480.0" prefWidth="640.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" prefWidth="80.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="80.0" prefWidth="80.0" />
@@ -97,15 +97,40 @@
 
             </children>
         </GridPane>
-      <Button layoutX="386.0" layoutY="60.0" mnemonicParsing="false" prefHeight="50.0" text="Next Palyer">
+      <ImageView fx:id="ActualPlayerLabel" fitHeight="120.0" fitWidth="120.0" layoutX="340.0" layoutY="14.0" onMouseClicked="#fieldClick" pickOnBounds="true" preserveRatio="true" />
+      <Label layoutX="344.0" layoutY="132.0" text="Current Player">
          <font>
-            <Font name="Arial Bold" size="24.0" />
+            <Font size="18.0" />
          </font>
-      </Button>
-      <Button layoutX="591.0" layoutY="60.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="110.0" text="Top 10">
+      </Label>
+      <Button fx:id="finishGameButton" layoutX="542.0" layoutY="93.0" mnemonicParsing="false" onAction="#finishGame" text="Give Up">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Button>
+      <Pane fx:id="gameOverPane" accessibleRole="TAB_PANE" layoutX="195.0" layoutY="283.0" prefHeight="261.0" prefWidth="414.0" visible="false">
+         <children>
+            <Label fx:id="gameOverLabel" focusTraversable="false" layoutX="83.0" layoutY="14.0" text="Game Over" textAlignment="CENTER" textFill="RED" visible="false">
+               <font>
+                  <Font name="System Bold" size="48.0" />
+               </font>
+            </Label>
+            <Label fx:id="winnerLabel" alignment="CENTER" layoutX="83.0" layoutY="84.0" prefHeight="40.0" prefWidth="250.0" textAlignment="CENTER" visible="false">
+               <font>
+                  <Font name="System Bold" size="36.0" />
+               </font>
+            </Label>
+            <Button fx:id="menuButton" layoutX="33.0" layoutY="164.0" mnemonicParsing="false" onAction="#finishGame" text="Main Menu" visible="false">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Button>
+            <Button fx:id="topPlayersButton" layoutX="247.0" layoutY="164.0" mnemonicParsing="false" onAction="#goToTopTen" prefHeight="36.0" prefWidth="110.0" text="Top 10" visible="false">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Button>
+         </children>
+      </Pane>
     </children>
 </Pane>

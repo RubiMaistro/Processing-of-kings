@@ -9,11 +9,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-@Slf4j
 public class LaunchController {
 
     @FXML
@@ -25,8 +23,8 @@ public class LaunchController {
     private Label errorLabel;
 
     public void startAction(ActionEvent actionEvent) throws IOException {
-        if (usernameTextfield_o.getText().isEmpty() && usernameTextfield_e.getText().isEmpty()) {
-            errorLabel.setText("* Username is empty!");
+        if (usernameTextfield_o.getText().isEmpty() || usernameTextfield_e.getText().isEmpty()) {
+            errorLabel.setText("Usernames is empty!\nWrite your names in the boxes!");
         } else {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/game.fxml"));
             Parent root = fxmlLoader.load();
@@ -34,7 +32,7 @@ public class LaunchController {
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
-            log.info("Username is set to {}, loading game scene.", usernameTextfield_o.getText() + " AND " + usernameTextfield_e.getText());
+            //log.info("Username is set to {}, loading game scene.", usernameTextfield_o.getText() + " AND " + usernameTextfield_e.getText());
         }
 
     }

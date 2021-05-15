@@ -1,11 +1,9 @@
 package processkings.state;
 
-import javafx.geometry.Pos;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 /**
@@ -39,7 +37,7 @@ public class TableState implements Cloneable{
     /**
      * Initializing the board table.
      */
-    public static final int[][] INITIAL_TABLE = {
+    public static int[][] INITIAL_TABLE = {
             {0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0},
@@ -51,17 +49,19 @@ public class TableState implements Cloneable{
     private Position ownPosition;
     private Position enemyPosition;
 
-    private static int[][] BoardTable = INITIAL_TABLE;
-    private ArrayList<Position> DefaultPositions = new ArrayList<Position>();
+    private static int[][] BoardTable;
+    private ArrayList<Position> DefaultPositions;
+    private ArrayList<Direction> moveList;
 
-    private Position savedClickPosition = null;
-    private Position defaultClickPosition = null;
+    private Position savedClickPosition;
+    private Position defaultClickPosition;
 
     /**
      * Creates a {@code PuzzleState} object that corresponds to the original initial state of the puzzle.
      */
     public TableState(){
         System.out.println("Missing parameters.");
+        initialMoveList();
     }
 
     /**
@@ -73,13 +73,20 @@ public class TableState implements Cloneable{
         checkPositions(enemy);
         this.ownPosition = your.clone();
         this.enemyPosition = enemy.clone();
+        initialState();
+        System.out.println("Constructor.");
     }
 
-    public void setPlayersPositionsInTableState(Position your, Position enemy){
-        this.ownPosition = your.clone();
-        this.enemyPosition = enemy.clone();
-        checkPositions(your);
-        checkPositions(enemy);
+    private void initialState(){
+        BoardTable = INITIAL_TABLE;
+        DefaultPositions = new ArrayList<Position>();
+        moveList = new ArrayList<Direction>();
+        setDefaultPositions();
+        setValuesInBoardTable();
+        setInitialTable();
+        initialMoveList();
+        Position savedClickPosition = null;
+        Position defaultClickPosition = null;
     }
 
     public void move(int row, int col){
@@ -87,7 +94,6 @@ public class TableState implements Cloneable{
 
         // Change position
         ownPosition.setTarget(direction);
-        System.out.println("\nset");
 
         // Move value
         var value = getValueFromBoardTable(savedClickPosition.row(),savedClickPosition.col());
@@ -101,15 +107,15 @@ public class TableState implements Cloneable{
     }
 
     public boolean isSolved(){
-        boolean bool = true;
+        int countEmptyPositions = 0;
         for (int i = 0; i<BOARD_SIZE_ROWS; i++) {
             for(int j = 0; j<BOARD_SIZE_COLS; j++) {
-                if(BoardTable[i][j] == 0 && isDistanceOne(ownPosition,new Position(i,j))) {
-                    bool = false;
+                if(isDistanceOne(new Position(i,j)) && BoardTable[i][j] == 0) {
+                    countEmptyPositions++;
                 }
             }
         }
-        return bool;
+        return countEmptyPositions == 0;
     }
 
     public boolean isEqualOwnPosition(int i, int j){
@@ -128,12 +134,16 @@ public class TableState implements Cloneable{
         return isEmpty(position)
                 && isOnBoard(position)
                 && isHaveEightNeighbor(position)
-                && isDistanceOne(ownPosition,position);
+                && isDistanceOne(position);
     }
 
 
     public int getValueFromBoardTable(int i, int j){
         return BoardTable[i][j];
+    }
+
+    public int getOwnValue(){
+        return BoardTable[ownPosition.row()][ownPosition.col()];
     }
 
     /**
@@ -144,6 +154,10 @@ public class TableState implements Cloneable{
         Position p = ownPosition;
         ownPosition = enemyPosition;
         enemyPosition = p;
+
+        if(isInDefaultTable(ownPosition.row(),ownPosition.col())){
+            BoardTable[ownPosition.row()][ownPosition.col()] = 3;
+        }
     }
 
     private void checkPositions(Position position) {
@@ -202,7 +216,6 @@ public class TableState implements Cloneable{
     }
 
     private boolean isHaveEightNeighbor(Position position){
-
         return isOnBoard(position.getTarget(Direction.UP))
                 && isOnBoard(position.getTarget(Direction.RIGHT))
                 && isOnBoard(position.getTarget(Direction.DOWN))
@@ -213,9 +226,25 @@ public class TableState implements Cloneable{
                 && isOnBoard(position.getTarget(Direction.DOWN_RIGHT));
     }
 
-    private boolean isDistanceOne(Position p1, Position p2){
-            return true;
+    private void initialMoveList(){
+        moveList.add(Direction.UP);
+        moveList.add(Direction.RIGHT);
+        moveList.add(Direction.DOWN);
+        moveList.add(Direction.LEFT);
+        moveList.add(Direction.UP_LEFT);
+        moveList.add(Direction.UP_RIGHT);
+        moveList.add(Direction.DOWN_LEFT);
+        moveList.add(Direction.DOWN_RIGHT);
     }
+
+    private boolean isDistanceOne(Position position){
+        return isHaveEightNeighbor(position)
+                && moveList.stream()
+                    .anyMatch((direction) -> ownPosition.getTarget(direction).row() == position.row()
+                            && ownPosition.getTarget(direction).col() == position.col());
+    }
+
+
 
     private boolean isEmpty(Position position) {
         return BoardTable[position.row()][position.col()] == 0;
@@ -266,6 +295,7 @@ public class TableState implements Cloneable{
         System.out.println("Change");
         System.out.println(a.row() + " " + a.col());
         System.out.println(b.row() + " " + b.col());
+
 
     }
 
