@@ -128,44 +128,46 @@ public class GameController{
         int clickedColumn = GridPane.getColumnIndex((Node)mouseEvent.getSource());
         int clickedRow = GridPane.getRowIndex((Node)mouseEvent.getSource());
 
+        if(!gameState.isSolved()) {
 
-            if (isSaveClick == false
-                    && isClickDefault == false
-                    && gameState.isEqualOwnPosition(clickedRow, clickedColumn)) {
+            if (!isSaveClick && !isClickDefault && gameState.isEqualOwnPosition(clickedRow, clickedColumn)) {
                 gameState.setSavedClickPosition(new Position(clickedRow, clickedColumn));
                 isSaveClick = true;
 
-            } else if (gameState.canMove(clickedRow, clickedColumn) == true && isSaveClick == true && isMoved == false) {
+            } else if (gameState.canMove(clickedRow, clickedColumn) && isSaveClick && !isMoved) {
                 gameState.move(clickedRow, clickedColumn);
-                stepCount += 1;
                 isMoved = true;
-                if(gameState.getOwnPosition().row() == P1.getPosition().row() && gameState.getOwnPosition().col() == P1.getPosition().col())
-                    logger.debug(STEPS_MARKER,P1.getUserName() + " move to the (" + clickedRow + "," + clickedColumn + ") position.");
+                if (gameState.getOwnPosition().row() == P1.getPosition().row() && gameState.getOwnPosition().col() == P1.getPosition().col())
+                    logger.debug(STEPS_MARKER, P1.getUserName() + " move to the (" + clickedRow + "," + clickedColumn + ") position.");
 
-            } else if (isMoved == true && isClickDefault == false && !gameState.isPlayer(clickedRow,clickedColumn)){
-                gameState.addNewDefaultPosition(new Position(clickedRow,clickedColumn));
+            } else if (isMoved && !isClickDefault && !gameState.isPlayer(clickedRow, clickedColumn)) {
+                gameState.addNewDefaultPosition(new Position(clickedRow, clickedColumn));
                 isSaveClick = false;
                 isMoved = false;
-                gameState.changeNextPlayer();
-                //P1.setPosition(gameState.getOwnPosition());
-                //P2.setPosition(gameState.getEnemyPosition());
-                logger.debug(STEPS_MARKER,P1.getUserName() + " set default the (" + clickedRow + "," + clickedColumn + ") position.");
-                logger.debug(DEFAULTS_MARKER,"(" + clickedRow + "," + clickedColumn + ")");
-                changePlayers();
+                isClickDefault = true;
+                logger.debug(STEPS_MARKER, P1.getUserName() + " set default the (" + clickedRow + "," + clickedColumn + ") position.");
+                logger.debug(DEFAULTS_MARKER, "(" + clickedRow + "," + clickedColumn + ")");
+                stepCount++;
             }
 
-        if(gameState.isSolved()) {
+            if(isClickDefault && !gameState.isSolved()) {
+                gameState.changeNextPlayer();
+                changePlayers();
+                isClickDefault = false;
+            }
+        } else if (gameState.isSolved()) {
             gameOverPane.setStyle("-fx-background-color: white;");
             gameOverPane.setVisible(true);
             gameOverLabel.setVisible(true);
-            winnerLabel.setText(P1.getUserName() + " win!");
+            winnerLabel.setText(P2.getUserName() + " win!");
             winnerLabel.setVisible(true);
             menuButton.setVisible(true);
             topPlayersButton.setVisible(true);
-            initialize();
-            logger.debug(STEPS_MARKER, P2.getUserName() + " win the game in " + stepCount + " steps.");
-        }
 
+                //logger.debug(STEPS_MARKER, P2.getUserName() + " win the game in " + stepCount + " steps.");
+                logger.debug(STEPS_MARKER, P2.getUserName() + " win the game in " + stepCount + " steps.");
+            initialize();
+        }
 
         drawGameState();
     }
