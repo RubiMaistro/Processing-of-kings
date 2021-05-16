@@ -57,7 +57,7 @@ public class Position implements Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
+        if ( o == this) {
             return true;
         }
         return false;
