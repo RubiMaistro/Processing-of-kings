@@ -1,4 +1,4 @@
-package processkings.state;
+package processing.state;
 
 import org.junit.jupiter.api.Test;
 

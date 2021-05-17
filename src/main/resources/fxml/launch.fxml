@@ -41,11 +41,11 @@
             <Image url="@../pictures/lionking_launch.png" />
          </image>
       </ImageView>
-      <Button fx:id="startButton1" layoutX="442.0" layoutY="193.0" mnemonicParsing="false" onAction="#startAction" prefHeight="51.0" prefWidth="105.0" text="Top10" textFill="#ae3d00">
+      <Button fx:id="startButton1" layoutX="442.0" layoutY="193.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="105.0" text="Top10" textFill="#ae3d00">
          <font>
             <Font name="System Bold" size="14.0" />
          </font></Button>
-      <Button fx:id="startButton2" layoutX="442.0" layoutY="268.0" mnemonicParsing="false" onAction="#startAction" prefHeight="51.0" prefWidth="105.0" text="Exit" textFill="#ae3d00">
+      <Button fx:id="startButton2" layoutX="442.0" layoutY="268.0" mnemonicParsing="false" onAction="#exit" prefHeight="51.0" prefWidth="105.0" text="Exit" textFill="#ae3d00">
          <font>
             <Font name="System Bold" size="14.0" />
          </font></Button>

@@ -32,8 +32,11 @@ public class LaunchController {
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
-            //log.info("Username is set to {}, loading game scene.", usernameTextfield_o.getText() + " AND " + usernameTextfield_e.getText());
         }
+
+    }
+    @FXML
+    private void exit(ActionEvent actionEvent){
 
     }
 }

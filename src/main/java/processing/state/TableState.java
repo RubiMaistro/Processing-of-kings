@@ -1,4 +1,4 @@
-package processkings.state;
+package processing.state;
 
 import lombok.Data;
 
@@ -286,7 +286,6 @@ public class TableState implements Cloneable{
 
     /**
      * Test the TableState class.
-     * @param args is the input.
      */
     public static void main(String[] args) {
         Position your = new Position(2, 0);
@@ -306,8 +305,6 @@ public class TableState implements Cloneable{
         tableState.setSavedClickPosition(new Position(2,0));
         //tableState.move(2,1);
 
-
-
         Position a = new Position(0,0);
         Position b = new Position(1,1);
 
@@ -321,7 +318,6 @@ public class TableState implements Cloneable{
         System.out.println("Change");
         System.out.println(a.row() + " " + a.col());
         System.out.println(b.row() + " " + b.col());
-
 
     }
 

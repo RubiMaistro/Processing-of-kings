@@ -14,31 +14,38 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import processkings.state.Player;
-import processkings.state.Position;
-import processkings.state.TableState;
+import processing.results.GameResult;
+import processing.state.Player;
+import processing.state.Position;
+import processing.state.TableState;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 public class GameController{
 
     private TableState gameState;
 
-    private List<Image> boardImages;
-    private List<Image> currentImages;
+    private List<Image> boardImages, currentImages;
 
     private Instant beginGame;
 
-    private Player P1 = new Player(new Position(2,0));
-    private Player P2 = new Player(new Position(3,7));
+    private Player P1, P2;
 
     private int stepCount = 0;
+
+    //private GameResultDao gameResultDao;
 
     @FXML
     private GridPane gameGrid;
@@ -61,7 +68,7 @@ public class GameController{
             menuButton,
             topPlayersButton;
 
-    private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager.getLogger();
+    private static Logger logger = LogManager.getLogger();
 
     private static final Marker PLAYER_NAME_MARKER = MarkerManager.getMarker("PLAYER_NAME");
     private static final Marker STEPS_MARKER = MarkerManager.getMarker("STEPS");
@@ -93,7 +100,18 @@ public class GameController{
     @FXML
     public void initialize() {
 
+        P1 = new Player(new Position(2,0));
+        P2 = new Player(new Position(3,7));
         gameState = new TableState(P1.getPosition(),P2.getPosition());
+
+        /*
+        org.jdbi.v3.core.Jdbi jdbi = Jdbi.create("jdbc:h2:mem:testdb");
+        jdbi.installPlugin(new SqlObjectPlugin());
+        try (Handle handle = jdbi.open()) {
+            gameResultDao = handle.attach(GameResultDao.class);
+            gameResultDao.createTable();
+        }
+        */
 
         gameState.setDefaultPositions();
         gameState.setInitialTable();
@@ -163,8 +181,14 @@ public class GameController{
             winnerLabel.setVisible(true);
             menuButton.setVisible(true);
             topPlayersButton.setVisible(true);
-
-                //logger.debug(STEPS_MARKER, P2.getUserName() + " win the game in " + stepCount + " steps.");
+            /*
+            org.jdbi.v3.core.Jdbi jdbi = Jdbi.create("jdbc:h2:mem:testdb");
+            jdbi.installPlugin(new SqlObjectPlugin());
+            try (Handle handle = jdbi.open()) {
+                gameResultDao = handle.attach(GameResultDao.class);
+                gameResultDao.insertPlayerInObj(getResult());
+            }
+            */
                 logger.debug(STEPS_MARKER, P2.getUserName() + " win the game in " + stepCount + " steps.");
             initialize();
         }
@@ -185,7 +209,7 @@ public class GameController{
 
     @FXML
     private void goToTopTen(ActionEvent actionEvent) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/topten.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/launch.fxml")));
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
@@ -193,10 +217,36 @@ public class GameController{
         gameState = new TableState(P1.getPosition(),P2.getPosition());
     }
 
+    private GameResult getResult() {
+
+        int solve = 0;
+        if(gameState.isSolved())
+            solve = 1;
+
+        GameResult result = GameResult.builder()
+                .name(P2.getUserName())
+                .steps(stepCount)
+                .solved(solve)
+                .created(new Date())
+                .build();
+        return result;
+    }
+
     private void changePlayers(){
         Player P0 = P1;
         P1 = P2;
         P2 = P0;
+    }
+
+    private static String formatDuration(Duration duration) {
+        long seconds = duration.getSeconds();
+        long absSeconds = Math.abs(seconds);
+        String positive = String.format(
+                "%d:%02d:%02d",
+                absSeconds / 3600,
+                (absSeconds % 3600) / 60,
+                absSeconds % 60);
+        return seconds < 0 ? "-" + positive : positive;
     }
 
 }

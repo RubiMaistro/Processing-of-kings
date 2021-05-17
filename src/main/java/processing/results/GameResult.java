@@ -1,12 +1,11 @@
-package processkings.results;
+package processing.results;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.util.Date;
 
 /**
  * Class representing the result of a game played by a specific player.
@@ -18,17 +17,10 @@ import java.time.ZonedDateTime;
 public class GameResult {
 
 
-    private Long id;
-
     /**
      * The name of the player.
      */
-    private String player;
-
-    /**
-     * Indicates whether the player has solved the puzzle.
-     */
-    private boolean solved;
+    private String name;
 
     /**
      * The number of steps made by the player.
@@ -36,17 +28,13 @@ public class GameResult {
     private int steps;
 
     /**
-     * The duration of the game.
+     * Indicates whether the player has win the game.
      */
-    private Duration duration;
+    private int solved;
 
     /**
      * The timestamp when the result was saved.
      */
-    private ZonedDateTime created;
-
-    protected void onPersist() {
-        created = ZonedDateTime.now();
-    }
+    private Date created;
 
 }
